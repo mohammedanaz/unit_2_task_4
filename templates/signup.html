@@ -30,7 +30,7 @@
                 </li>
             </ul>
             <div class="d-flex">
-                <a href="/login"><button class="btn btn-light ms-3">Login</button></a>
+                <a href="/login/"><button class="btn btn-light ms-3">Login</button></a>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
 
   <div class="container bg-light w-25 mt-3 pb-3"> 
     <h1>SignUp </h1>
-    {% if msg_signup %}<h5 class="text-danger">{{msg_signup}}</h5> click to <a href="/login">Login</a>{% endif %}
+    {% if msg_signup %}<h5 class="text-danger">{{msg_signup}}</h5> click to <a href="/login/">Login</a>{% endif %}
     <form action="/signup/" method="POST">
       {% csrf_token %}
       {% for item in form %}
@@ -52,7 +52,7 @@
         </div>
       {% endfor %}
       <button class="btn btn-primary" type="submit">Sign Up</button>
-      <p>If existing user please <a href="/login"> Login</a> </p>
+      <p>If existing user please <a href="/login/"> Login</a> </p>
     </form>
   </div>
 
