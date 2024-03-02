@@ -42,7 +42,6 @@ def user_login(request):
         password = request.POST['password']
 
         user = authenticate(request, username=user_name, password=password) # this method returns None always?
-        print('Authentication attempt for:', user_name, 'Returned user is:', user)
 
         user_check = UserRegister.objects.filter(username=user_name).first() # alternative method used
 

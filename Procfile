@@ -1,1 +1,0 @@
-web: gunicorn unit_2_task_4.wsgi
