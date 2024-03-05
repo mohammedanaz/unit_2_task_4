@@ -38,16 +38,17 @@
 
   <div class="container bg-light w-25 mt-3 pb-3"> 
     <h1>SignUp </h1>
-    {% if msg_signup %}<h5 class="text-danger">{{msg_signup}}</h5> click to <a href="/login/">Login</a>{% endif %}
+    {% if msg_signup %}<h6 class="text-danger">{{msg_signup}}</h6> {% endif %}
     <form action="/signup/" method="POST">
       {% csrf_token %}
       {% for item in form %}
         <div class="form-group">
           <label for="{{ item.id_for_label }}">{{ item.label }}</label>
           {% if item.name == 'password' %}
-            <input type="password" class="form-control mb-3" id="{{ item.id_for_label }}" name="{{ item.html_name }}">
+            <input type="password" class="form-control mb-3" id="{{ item.id_for_label }}" name="{{ item.html_name }}" required>
           {% else %}
-            <input type="text" class="form-control mb-3" id="{{ item.id_for_label }}" name="{{ item.html_name }}">
+            <input type="text" class="form-control mb-3" id="{{ item.id_for_label }}" name="{{ item.html_name }}" required>
+            {% if item.errors %} {{ error }} {% endif %}
           {% endif %}
         </div>
       {% endfor %}

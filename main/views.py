@@ -1,79 +1,65 @@
 from django.shortcuts import render, redirect
-from .models import Products, UserRegister
-from .forms import RegisterForm
-from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import check_password
+from .models import Products
+from django.contrib.auth.models import User
+from .forms import SignUpForm
+from django.contrib.auth import authenticate, login, logout
 
-
-
+###################################### sign up view ##################################
 def signup(request):
-    if 'username' in request.session:
-        user_name = request.session['username']
-        user_check = UserRegister.objects.filter(username = user_name).first()
-        if user_check is not None:
-            return redirect('home')
+    if request.user.is_authenticated:
+        return redirect('home')
         
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
-            user_name = form.cleaned_data['username']
-            if UserRegister.objects.filter(username=user_name).exists():
-                form = RegisterForm()
-                msg = 'User already exists'
-                return render(request, 'signup.html', {'form': form, 'msg_signup': msg})
-            else:
-                form.save()
-                return redirect('login')
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            return redirect('login')
+        else:
+            return render(request, 'signup.html', {'form': form, 'msg_signup': form.errors})
     else:
-        form = RegisterForm()
+        form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
 
-
+############################### login view #####################################
 def user_login(request):
-    if 'username' in request.session:
-        user_name = request.session['username']
-        user_check = UserRegister.objects.filter(username = user_name).first()
-        if user_check is not None:
-            return redirect('home')
+    if request.user.is_authenticated:
+        return redirect('home')
         
     if request.method == 'POST':
         user_name = request.POST['username']
         password = request.POST['password']
+        user = authenticate(request, username=user_name, password=password) 
 
-        user = authenticate(request, username=user_name, password=password) # this method returns None always?
-
-        user_check = UserRegister.objects.filter(username=user_name).first() # alternative method used
-
-        if user_check is not None:
-            if check_password(password, user_check.password):
-                request.session['username'] = user_name
-                return redirect('home')
-            else:
-                msg = 'Invalid'
-                return render(request, 'login.html', {'msg_pass': msg})
+        if user is not None:
+            login(request, user)
+            return redirect('home')
         else:
-            msg = 'does not exist'
+            msg = 'or password wrong'
             return render(request, 'login.html', {'msg_user': msg})
-    
+        
     return render(request, 'login.html')
 
 
+####################################### home view ####################################
 def home(request):
-    context = {
-        'fruit' : Products.objects.order_by('prod_name')
+    if request.user.is_authenticated:
+        visit_count = request.session.get('visit_count',0)
+        visit_count += 1
+        request.session['visit_count'] = visit_count
+        context = {
+        'fruit' : Products.objects.order_by('prod_name'),
+        'visit_count': visit_count
     }
-    if 'username' in request.session:
-        user_name = request.session['username']
-        user_check = UserRegister.objects.filter(username = user_name).first()
-        if user_check is not None:
-            return render(request, 'home.html', context)
+        return render(request, 'home.html', context)
     
     return redirect(user_login)
 
 
-
+############################ logout view #############################################
 def user_logout(request):
-    if 'username' in request.session:
-        request.session.clear()
+    if request.user.is_authenticated:
+        logout(request)
     return redirect('login')

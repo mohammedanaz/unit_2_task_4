@@ -45,13 +45,12 @@
       <div class="mb-4">
         <label for="exampleInputUser" class="form-label">User Name</label>
         <span>{% if msg_user %} {{msg_user}}.Click <a href="/signup/">Sign Up</a> {% endif %}</span>
-        <input type="text" class="form-control" name="username" id="exampleInputUser">
+        <input type="text" class="form-control" name="username" id="exampleInputUser" required>
       </div>
   
       <div class="mb-4">
         <label for="exampleInputPassword1" class="form-label">Password</label>
-        <span class="text-danger">{% if msg_pass %} {{msg_pass}}{% endif %}</span>
-        <input type="password" class="form-control" name="password" id="exampleInputPassword1">
+        <input type="password" class="form-control" name="password" id="exampleInputPassword1" required>
       </div>
       
       <button type="submit" class="btn btn-primary">Login</button>

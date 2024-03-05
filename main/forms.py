@@ -1,15 +1,29 @@
 from django import forms
-from main.models import UserRegister
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
-class RegisterForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(RegisterForm, self).__init__(*args, **kwargs)
-        self.fields['f_name'].label = 'First Name'
-        self.fields['l_name'].label = 'Last Name'
-        self.fields['email_id'].label = 'Email Address'
-        self.fields['username'].label = 'Username'
-        self.fields['password'].label = 'Password'
+##################################### Validation Functions #####################################
+def password_validation(value):
+    if len(value) < 8 :
+        raise ValidationError('Password must contain 8 characters')
+    if not any(char.isupper() for char in value):
+        raise ValidationError('Password must contain at least one upper case')
+    if not any(char.islower() for char in value):
+        raise ValidationError('Password must contain at least one lower case')
+    if not any(char in '@/_' for char in value):
+        raise ValidationError('Password must contain any one special character from \'@/_\'')
+    
+############################################# Forms ############################################
+class SignUpForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        password_validation(password)
+        return password
+
     class Meta:
-        model = UserRegister
-        fields = ['f_name', 'l_name', 'email_id', 'username', 'password']
-        
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username', 'password']
+
+    
