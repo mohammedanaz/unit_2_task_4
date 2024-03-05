@@ -17,7 +17,16 @@ def signup(request):
             user.save()
             return redirect('login')
         else:
-            return render(request, 'signup.html', {'form': form, 'msg_signup': form.errors})
+            error_msg = None
+            if form.errors.get('email'):
+                error_msg = form.errors['email']
+            elif form.errors.get('username'):
+                error_msg = form.errors['username']
+            elif form.errors.get('password'):
+                error_msg = form.errors['password']
+            elif form.errors.get('__all__'):
+                error_msg = form.errors['__all__']
+            return render(request, 'signup.html', {'form': form, 'error_signup': error_msg})
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
