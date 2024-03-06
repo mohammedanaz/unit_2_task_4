@@ -44,8 +44,8 @@
         {% csrf_token %}
       <div class="mb-4">
         <label for="exampleInputUser" class="form-label">User Name</label>
-        <span>{% if msg_user %} {{msg_user}}.Click <a href="/signup/">Sign Up</a> {% endif %}</span>
         <input type="text" class="form-control" name="username" id="exampleInputUser" required>
+        <span class="text-danger">{% if msg_user %} {{msg_user}} {% endif %}</span>
       </div>
   
       <div class="mb-4">

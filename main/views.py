@@ -3,8 +3,10 @@ from .models import Products
 from django.contrib.auth.models import User
 from .forms import SignUpForm
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.cache import never_cache
 
 ###################################### sign up view ##################################
+@never_cache
 def signup(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -33,26 +35,28 @@ def signup(request):
 
 
 ############################### login view #####################################
+@never_cache
 def user_login(request):
     if request.user.is_authenticated:
         return redirect('home')
         
     if request.method == 'POST':
-        user_name = request.POST['username']
-        password = request.POST['password']
+        user_name = request.POST.get('username')
+        password = request.POST.get('password')
         user = authenticate(request, username=user_name, password=password) 
-
+        print('User is:', user)
         if user is not None:
             login(request, user)
             return redirect('home')
         else:
-            msg = 'or password wrong'
+            msg = 'Invalid user name or password.'
             return render(request, 'login.html', {'msg_user': msg})
-        
-    return render(request, 'login.html')
+    else:        
+        return render(request, 'login.html')
 
 
 ####################################### home view ####################################
+@never_cache
 def home(request):
     if request.user.is_authenticated:
         visit_count = request.session.get('visit_count',0)
@@ -68,6 +72,7 @@ def home(request):
 
 
 ############################ logout view #############################################
+@never_cache
 def user_logout(request):
     if request.user.is_authenticated:
         logout(request)
