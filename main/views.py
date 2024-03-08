@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from .forms import SignUpForm
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
+from django.core.cache import cache
+
+CACHE_TIMEOUT = 120
 
 ###################################### sign up view ##################################
 @never_cache
@@ -62,8 +65,14 @@ def home(request):
         visit_count = request.session.get('visit_count',0)
         visit_count += 1
         request.session['visit_count'] = visit_count
+
+        home_cache = cache.get('home_cache')
+        if not home_cache:
+            home_cache = Products.objects.order_by('prod_name')
+            cache.set('home_cache', home_cache, timeout=CACHE_TIMEOUT)
+
         context = {
-        'fruit' : Products.objects.order_by('prod_name'),
+        'fruit' : home_cache,
         'visit_count': visit_count
     }
         return render(request, 'home.html', context)
